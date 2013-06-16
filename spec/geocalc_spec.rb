@@ -1,0 +1,3 @@
+describe GeoSpec do
+
+end

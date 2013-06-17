@@ -11,8 +11,6 @@
 # linear distances, we just use the number of meters per earth
 # radian (or km or feet or whatever).
 module GeoCalc
-  METERS_PER_NMILE = 1852
-
   #radians refer to radians of the earth (measured how?)
   METERS_PER_RADIAN = 20001600.0 / Math::PI
 
@@ -21,7 +19,7 @@ module GeoCalc
   # @param r_lat2 [Integer] lat2 in radians
   # @param r_lon1 [Integer] lon2 in radians
   # @return [Integer] distance in meters
-  def great_circle_distance(r_lat1, r_lon1, r_lat2, r_lon2)
+  def self.great_circle_distance(r_lat1, r_lon1, r_lat2, r_lon2)
     d_1 = 2.0 * asin(sqrt((sin((r_lat1 - r_lat2) / 2.0)) ** 2.0
     d_2 = cos(r_lat1) * cos(r_lat2) * (sin((r_lon1 - r_lon2) / 2.0)) ** 2.0 ))
 
@@ -35,7 +33,7 @@ module GeoCalc
   # @param r_lat2 [Integer] lat2 in radians
   # @param r_lon1 [Integer] lon2 in radians
   # @return [Integer] distance in meters
-  def haversine_distance(r_lat1, r_lon1, r_lat2, r_lon2)
+  def self.haversine_distance(r_lat1, r_lon1, r_lat2, r_lon2)
     r_dlon = r_lon2 - r_lon1
     r_dlat = r_lat2 - r_lat1
 
@@ -51,7 +49,7 @@ module GeoCalc
   # @param r_lat2 [Integer] lat2 in radians
   # @param r_lon1 [Integer] lon2 in radians
   # @return [Integer] true course in radians
-  def great_circle_true_course_at_start(r_lat1, r_lon1, r_lat2, r_lon2)
+  def self.great_circle_true_course_at_start(r_lat1, r_lon1, r_lat2, r_lon2)
     if sin(r_lon2 - r_lon1) < 0.0
       tc1 = acos((sin(r_lat2) - sin(r_lat1) * cos(d)) / (sin(d) * cos(r_lat1)))
     else
@@ -71,7 +69,7 @@ module GeoCalc
   # @param r_lon1 [Integer] lon2 in radians
   # @param r_lon_x [Integer] lat that we are querying with
   # @return [Integer] true course in radians
-  def great_circle_true_course_at_lat(r_lat1, r_lon1, r_lat2, r_lon2, r_lat_x)
+  def self.great_circle_true_course_at_lat(r_lat1, r_lon1, r_lat2, r_lon2, r_lat_x)
     tc1 = great_circle_true_course_at_start(r_lat1, r_lon1, r_lat2, r_lon2)
     tc_x = asin(sin(tc2) * cos(r_lat2) / cos(r_lat_x))
   end
@@ -83,7 +81,7 @@ module GeoCalc
   # @param tc [Integer] true course in radians
   # @param r_lon1 [Integer] offset
   # @return [Array] of [r_lat, r_lon]
-  def offset_radial_and_distance(r_lat, r_lon, tc, r_offset)
+  def self.offset_radial_and_distance(r_lat, r_lon, tc, r_offset)
     r_lat = asin(sin(r_lat1) * cos(r_offset) + cos(r_lat1) * sin(r_offset) * cos(tc))
     if (r_lat == 0)
       r_lon = r_lon1 #endpoint a pole
@@ -102,7 +100,7 @@ module GeoCalc
   # @param r_lat2 [Integer] lat2 in radians
   # @param r_lon1 [Integer] lon2 in radians
   # @return [Array]
-  def rhumb_line(r_lat1, r_lon1, r_lat2, r_lon2)
+  def self.rhumb_line(r_lat1, r_lon1, r_lat2, r_lon2)
     precision = 10.0 ** -15.0
     dlon_W = mod(r_lon2 - r_lon1, 2.0 * pi)
     dlon_E = mod(r_lon1 - r_lon2, 2.0 * pi)
@@ -120,6 +118,6 @@ module GeoCalc
       d = abs((r_lat2 - r_lat1) / cos(tc))
     end
 
-    [d, tc]
+    [d * METERS_PER_RADIAN, tc]
   end
 end

@@ -1,5 +1,3 @@
-
-
 #True Course (tc) is defined as the angle in radians from the course
 #line and the local meridian (due north), measure clockwise.
 #
@@ -12,27 +10,42 @@
 # Their distances are converted originally from radians also.  To convert to
 # linear distances, we just use the number of meters per earth
 # radian (or km or feet or whatever).
+#
+# North latitudes and West longitudes are treated as
+# positive, and South latitudes and East longitudes negative.
+#
+#TODO: rename this to be Rubiary
 module GeoCalc
-  # radians refer to radians of the earth.  though this differs, depending on
+  # Radians refer to radians of the earth.  though this differs, depending on
   # whether you measure equatorally or through the poles, this is an
   # approximation
   METERS_PER_RADIAN = 180.0 * 60.0 / Math::PI * 1852.0
 
+
+  # This uses the law of haversines to calculate the great circle distance.
   # @param r_lat1 [Integer] lat1 in radians
   # @param r_lon1 [Integer] lon1 in radians
   # @param r_lat2 [Integer] lat2 in radians
   # @param r_lon1 [Integer] lon2 in radians
   # @return [Integer] distance in meters
   def self.great_circle_distance(r_lat1, r_lon1, r_lat2, r_lon2)
+    great_circle_distance_rads(r_lat1, r_lon1, r_lat2, r_lon2) * METERS_PER_RADIAN
+  end
+
+  # @param r_lat1 [Integer] lat1 in radians
+  # @param r_lon1 [Integer] lon1 in radians
+  # @param r_lat2 [Integer] lat2 in radians
+  # @param r_lon1 [Integer] lon2 in radians
+  # @return [Float] Distance in radians
+  def self.great_circle_distance_rads(r_lat1, r_lon1, r_lat2, r_lon2)
     a = (Math.sin((r_lat1 - r_lat2) / 2.0)) ** 2.0
     b = Math.cos(r_lat1) * Math.cos(r_lat2) * (Math.sin((r_lon1 - r_lon2) / 2.0)) ** 2.0
-    r_dist = 2.0 * Math.asin(Math.sqrt(a + b))
-
-    r_dist * METERS_PER_RADIAN
+    2.0 * Math.asin(Math.sqrt(a + b))
   end
 
   # I'm not sure how the haversine distance is different from the gc_distance
   # calculated above
+  # Correction: once the terms are simplified, it's the same formula
   # @param r_lat1 [Integer] lat1 in radians
   # @param r_lon1 [Integer] lon1 in radians
   # @param r_lat2 [Integer] lat2 in radians
@@ -44,7 +57,7 @@ module GeoCalc
 
     a = (Math.sin(r_dlat / 2.0)) ** 2.0
     b = Math.cos(r_lat1) * Math.cos(r_lat2) * (Math.sin(r_dlon / 2.0)) ** 2.0
-    r_dist = 2.0 * Math.atan2( Math.sqrt(a + b), Math.sqrt(1.0 - (a + b )))
+    r_dist = 2.0 * Math.atan2( Math.sqrt(a + b), Math.sqrt(1.0 - (a + b)))
 
     r_dist * METERS_PER_RADIAN
   end
@@ -56,15 +69,27 @@ module GeoCalc
   # @param r_lon1 [Integer] lon2 in radians
   # @return [Integer] true course in radians
   def self.great_circle_true_course_at_start(r_lat1, r_lon1, r_lat2, r_lon2)
-    if Math.sin(r_lon2 - r_lon1) < 0.0
-      tc1 = acos((Math.sin(r_lat2) - Math.sin(r_lat1) * Math.cos(d)) / (Math.sin(d) * Math.cos(r_lat1)))
-    else
-      tc1 = 2.0 * pi - acos((Math.sin(r_lat2) - Math.sin(r_lat1) * Math.cos(d)) / (Math.sin(d) * Math.cos(r_lat1)))
+
+    # if starting on a pole
+    if Math.cos(r_lat1) < Float::EPSILON
+      if (r_lat1 > 0)
+        #starting from N pole due south
+        return Math::PI
+      else
+        # starting from S pole, so we go due north
+        return 2.0 * Math::PI
+      end
     end
 
-    tc1
-  end
+    d = great_circle_distance_rads(r_lat1, r_lon1, r_lat2, r_lon2)
 
+    # if not starting on a pole
+    if Math.sin(r_lon2 - r_lon1) < 0.0
+      return Math.acos((Math.sin(r_lat2) - Math.sin(r_lat1) * Math.cos(d)) / (Math.sin(d) * Math.cos(r_lat1)))
+    else
+      return 2.0 * Math::PI - Math.acos((Math.sin(r_lat2) - Math.sin(r_lat1) * Math.cos(d)) / (Math.sin(d) * Math.cos(r_lat1)))
+    end
+  end
 
   # Given two coordinates, which implicitly form a great circle, find the
   # true course at an arbitrary latitude.
@@ -147,6 +172,6 @@ end
 
 
 # Require all nested files
-Dir.glob('./lib/traj/*.rb').each do |filename|
+Dir.glob('./lib/geocalc/*.rb').each do |filename|
   require filename
 end

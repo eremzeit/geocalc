@@ -29,21 +29,28 @@ describe GeoCalc do
     end
   end
 
+
+  # This is duplicate.  Haversine is just the name of the method for calculating GCD.
   describe '::haversine_distance' do
     it 'finds the distance between LAX and JFK and vise versa' do
-      #meters = GeoCalc.haversine_distance(lat_lon1[0], lat_lon1[1], lat_lon2[0], lat_lon2[1])
-      #expect(meters).to be_within(1000).of(3970688)
+      meters = GeoCalc.haversine_distance(lat_lon1[0], lat_lon1[1], lat_lon2[0], lat_lon2[1])
+      expect(meters).to be_within(1000).of(3970688)
     end
   end
 
   describe '::great_circle_true_course_at_start' do
-    #tc = GeoSpec.great_circle_true_course_at_start(lat_lon1[0], lat_lon1[1], lat_lon2[0], lat_lon2[1])
-    #expect(tc).to be_within(0.0001).of(1.150035) #radians
+    it 'calculates the gc true course' do
+      tc = GeoCalc.great_circle_true_course_at_start(lat_lon1[0], lat_lon1[1], lat_lon2[0], lat_lon2[1])
+      expect(tc).to be_within(0.0001).of(1.150035) #radians
+    end
   end
 
 
   describe '::great_circle_true_course_at_lat' do
-    #self.great_circle_true_course_at_lat(lat_lon1[0], lat_lon1[1], lat_lon2[0], lat_lon2[1])
+    it 'calculates the gc true course at lat' do
+      tc = self.great_circle_true_course_at_lat(lat_lon1[0], lat_lon1[1], lat_lon2[0], lat_lon2[1])
+      expect(tc).to be_within(0.0001).of(1234) #radians
+    end
   end
 
   describe '::self.offset_radial_and_distance' do

@@ -91,20 +91,6 @@ module GeoCalc
     end
   end
 
-  # Given two coordinates, which implicitly form a great circle, find the
-  # true course at an arbitrary latitude.
-  #
-  # @param r_lat1 [Integer] lat1 in radians
-  # @param r_lon1 [Integer] lon1 in radians
-  # @param r_lat2 [Integer] lat2 in radians
-  # @param r_lon1 [Integer] lon2 in radians
-  # @param r_lon_x [Integer] lat that we are querying with
-  # @return [Integer] true course in radians
-  def self.great_circle_true_course_at_lat(r_lat1, r_lon1, r_lat2, r_lon2, r_lat_x)
-    tc1 = great_circle_true_course_at_start(r_lat1, r_lon1, r_lat2, r_lon2)
-    tc_x = Math.asin(Math.sin(tc2) * Math.cos(r_lat2) / Math.cos(r_lat_x))
-  end
-
   # Given a starting point, a true course, and an offset,
   # what is the resulting lat and lon?
   # @param r_lat1 [Integer] lat in radians

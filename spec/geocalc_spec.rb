@@ -45,14 +45,6 @@ describe GeoCalc do
     end
   end
 
-
-  describe '::great_circle_true_course_at_lat' do
-    it 'calculates the gc true course at lat' do
-      tc = self.great_circle_true_course_at_lat(lat_lon1[0], lat_lon1[1], lat_lon2[0], lat_lon2[1])
-      expect(tc).to be_within(0.0001).of(1234) #radians
-    end
-  end
-
   describe '::self.offset_radial_and_distance' do
 
     #self.offset_radial_and_distance

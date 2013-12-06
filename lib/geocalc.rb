@@ -15,11 +15,12 @@
 # positive, and South latitudes and East longitudes negative.
 #
 #TODO: rename this to be Rubiary
-module GeoCalc
+module Rubiary
   # Radians refer to radians of the earth.  though this differs, depending on
   # whether you measure equatorally or through the poles, this is an
   # approximation
   METERS_PER_RADIAN = 180.0 * 60.0 / Math::PI * 1852.0
+  METERS_PER_MILE = 1609.34
 
 
   # This uses the law of haversines to calculate the great circle distance.
@@ -145,6 +146,25 @@ module GeoCalc
   # @return [Float] the same measure but as a decimal
   def self.to_dec_degrees(deg, min, sec)
     Float(deg) + Float(min) / 60.0 + Float(sec) / 3600.0
+  end
+
+  # @param rads [Float]
+  # @return [Float]
+  def self.rads_to_dec_degrees(rads)
+    rads / (2.0 * Math::PI) * 360.0
+  end
+
+  # @param rads [Float]
+  # @return [Float]
+  def self.dec_degrees_to_rads(dec)
+    dec / 360.0 * (2.0 * Math::PI)
+  end
+
+
+  # @param meters [Float]
+  # @return [Float]
+  def self.meters_to_miles(meters)
+    meters / METERS_PER_MILE
   end
 
   # Converts radians of the earth to a quantity of meters.  This assumes that
